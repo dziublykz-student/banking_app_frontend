@@ -14,7 +14,7 @@ const config = {
    * @type {string}
    * @default 'http://localhost'
    */
-  apiDomain: import.meta.env.VITE_API_DOMAIN || 'http://localhost',
+  apiDomain: import.meta.env.VITE_API_DOMAIN || 'http://localhost:8080',
 
 };
 

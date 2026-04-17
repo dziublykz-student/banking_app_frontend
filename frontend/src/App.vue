@@ -1,7 +1,25 @@
 <script setup>
-import ArticleArchivePage from './components/pages/ArticleArchivePage/ArticleArchivePage.vue'
+import { ref, onMounted } from 'vue'
+import { get } from './utils/api.js'
+
+const result = ref(null)
+const error = ref(null)
+
+onMounted(async () => {
+  try {
+    const response = await get('/test')
+    result.value = await response.json()
+  } catch (e) {
+    error.value = e.message
+  }
+})
 </script>
 
 <template>
-  <ArticleArchivePage />
+  <div>
+    <h1>Connection Test</h1>
+
+    <pre v-if="result">{{ result }}</pre>
+    <p v-if="error">Error: {{ error }}</p>
+  </div>
 </template>
