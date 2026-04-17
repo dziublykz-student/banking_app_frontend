@@ -1,79 +1,42 @@
-# Web Development 2 Boilerplate
+# Banking App Frontend
 
-A full-stack web application, featuring a PHP REST API backend and a Vue 3 frontend.
+This repository contains the frontend of our Banking App project for Fullstack Web Development.  
+The frontend is built as a Single Page Application (SPA) using Vue and Vite.
 
-## 🏗️ Architecture
+## Project purpose
 
-This project consists of two main components:
+The purpose of this application is to provide the user interface for a banking system.  
+Customers and employees will be able to interact with the backend through a REST API.
 
-- **Backend**: PHP REST API following MVC architecture patterns
-- **Frontend**: Vue 3 application with Vite, Tailwind CSS, and Storybook
+The frontend will communicate with the Spring Boot backend to support features such as:
+- user login and registration
+- viewing accounts
+- viewing transactions
+- transferring money
+- ATM-related actions
+- employee approval flows
 
-## 📁 Project Structure
+## Tech stack
 
-```
-web_development_2_boilerplate/
-├── backend/          # PHP REST API
-│   ├── app/          # Application code
-│   ├── docker-compose.yml
-│   └── README.md     # Backend documentation
-└── frontend/         # Vue 3 application
-    ├── src/          # Source code
-    └── README.md     # Frontend documentation
-```
+- Vue
+- Vite
+- JavaScript
+- REST API communication with fetch
+- Storybook
 
-## 🚀 Quick Start
+## Project structure
 
-### Prerequisites
-
-- **Docker and Docker Compose** (for backend)
-- **Node.js** ^20.19.0 or >=22.12.0 (for frontend)
-- **npm** or **yarn**
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-
-```bash
-cd backend
-```
-
-2. Start Docker containers:
-
-```bash
-docker-compose up
-```
-
-3. Install PHP dependencies:
-
-```bash
-docker-compose exec php composer install
-```
-
-The API will be available at **http://localhost**
-
-For detailed backend documentation, see [backend/README.md](./backend/README.md)
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Start the development server:
-
-```bash
-npm run dev
-```
-
-The frontend will be available at **http://localhost:5173** (or the port shown in terminal)
-
-For detailed frontend documentation, see [frontend/README.md](./frontend/README.md)
+```text
+src/
+  assets/
+  components/
+  utils/
+    api.js
+  App.vue
+  config.js
+  main.js
+public/
+.storybook/
+index.html
+vite.config.js
+package.json
