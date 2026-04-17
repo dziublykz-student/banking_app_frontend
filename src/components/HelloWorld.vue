@@ -1,5 +1,5 @@
 <script setup>
-import Button from '../components/atoms/Button/Button.vue'
+import Button from './atoms/Button/Button.vue'
 defineProps({
   msg: {
     type: String,
