@@ -22,6 +22,15 @@
         <div class="form-group">
           <label for="password">Password</label>
           <input id="password" v-model="form.password" type="password" required />
+          <div class="password-rules">
+          <small>Password must contain:</small>
+          <ul>
+            <li :class="{ valid: isValidLength }">At least 8 characters</li>
+            <li :class="{ valid: hasUpper }">One uppercase letter</li>
+            <li :class="{ valid: hasLower }">One lowercase letter</li>
+            <li :class="{ valid: hasSpecial }">One special character</li>
+          </ul>
+        </div>
         </div>
 
         <div class="form-group">
@@ -49,7 +58,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 
 const form = reactive({
   firstName: '',
@@ -59,6 +68,12 @@ const form = reactive({
   bsn: '',
   phoneNumber: ''
 })
+
+// Password validation rules, turns green when valid
+const isValidLength = computed(() => form.password.length >= 8)
+const hasUpper = computed(() => /[A-Z]/.test(form.password))
+const hasLower = computed(() => /[a-z]/.test(form.password))
+const hasSpecial = computed(() => /[!@#$%^&*()]/.test(form.password))
 
 const message = ref('')
 const error = ref('')
