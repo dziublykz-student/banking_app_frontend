@@ -92,3 +92,22 @@ button:hover {
   margin-top: 18px;
   text-align: center;
 }
+
+.password-rules {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.password-rules ul {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+
+.password-rules li {
+  margin-bottom: 2px;
+}
+
+.valid {
+  color: green;
+}
