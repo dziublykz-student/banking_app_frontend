@@ -30,11 +30,14 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const form = reactive({
   email: '',
   password: ''
 })
+
+const router = useRouter()
 
 const message = ref('')
 const error = ref('')
@@ -59,6 +62,12 @@ async function loginUser() {
     }
 
     message.value = data.message || 'Login successful'
+
+    if (data.approved) {
+      router.push('/dashboard')
+    } else {
+      router.push('/pending-approval')
+    }
 
     form.email = ''
     form.password = ''
