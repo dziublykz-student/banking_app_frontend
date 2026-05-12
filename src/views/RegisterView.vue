@@ -59,6 +59,7 @@
 
 <script setup>
 import { reactive, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const form = reactive({
   firstName: '',
@@ -77,6 +78,7 @@ const hasSpecial = computed(() => /[!@#$%^&*()]/.test(form.password))
 
 const message = ref('')
 const error = ref('')
+const router = useRouter()
 
 async function registerUser() {
   message.value = ''
@@ -105,6 +107,8 @@ async function registerUser() {
     form.password = ''
     form.bsn = ''
     form.phoneNumber = ''
+
+    router.push('/pending-approval')
   } catch (err) {
     error.value = err.message
   }

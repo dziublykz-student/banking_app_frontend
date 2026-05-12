@@ -63,11 +63,18 @@ async function loginUser() {
 
     message.value = data.message || 'Login successful'
 
-    if (data.approved) {
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('role', data.role)
+    localStorage.setItem('approved', data.approved)
+    localStorage.setItem('email', form.email)
+
+    if (data.role === 'EMPLOYEE') {
+      router.push('/employee-dashboard')
+    } else if (data.approved) {
       router.push('/dashboard')
     } else {
       router.push('/pending-approval')
-    }
+    } 
 
     form.email = ''
     form.password = ''

@@ -168,3 +168,480 @@ h1 {
 .logout-btn:hover {
   background: #6a2c14;
 }
+
+.dashboard-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  background: #f5f5f5;
+  padding: 40px;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: 500px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.subtitle {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+button {
+  background: #4b1f0e;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+}
+
+.bank-page {
+  min-height: 100vh;
+  background: #f5f6f8;
+  padding: 30px;
+  color: #1f2937;
+  padding-bottom: 110px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.label {
+  color: #777;
+  margin: 0;
+}
+
+h1 {
+  margin: 4px 0 0;
+}
+
+.balance-card {
+  background: linear-gradient(135deg, #1f2937, #3b2f2f);
+  color: white;
+  padding: 28px;
+  border-radius: 22px;
+  margin-bottom: 25px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.balance-card p {
+  margin: 0;
+  opacity: 0.8;
+}
+
+.balance-card h2 {
+  font-size: 2.4rem;
+  margin: 10px 0;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.quick-actions button {
+  background: #1f2937;
+  border: none;
+  padding: 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+  font-weight: 600;
+}
+
+.accounts,
+.transactions {
+  background: white;
+  padding: 22px;
+  border-radius: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+}
+
+.account-card,
+.transaction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid #eee;
+}
+
+.account-card h3 {
+  margin: 0;
+}
+
+.account-card p {
+  margin: 5px 0 0;
+  color: #777;
+}
+
+.positive {
+  color: green;
+}
+
+.transfer-page {
+  min-height: 100vh;
+  background: #f5f6f8;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.transfer-card {
+  background: white;
+  width: 520px;
+  padding: 30px;
+  border-radius: 22px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 15px;
+  color: #1f2937;
+}
+
+.back-btn:hover {
+  color: white;
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.transfer-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f1f1f1;
+  border-radius: 12px;
+  padding: 5px;
+  margin-bottom: 25px;
+}
+
+.transfer-tabs button {
+  border: none;
+  background: transparent;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.transfer-tabs button.active {
+  background: #1f2937;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  color: white;
+}
+
+.transfer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+input,
+select {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.transfer-btn {
+  margin-top: 10px;
+  background: #1f2937;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.success-message {
+  color: green;
+  margin-top: 15px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 15px;
+}
+
+.admin-layout {
+  min-height: 100vh;
+  display: flex;
+  background: #f4f6fb;
+  color: #1f2937;
+}
+
+.sidebar {
+  width: 250px;
+  background: #1f2937;
+  color: white;
+  padding: 30px 22px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  margin-bottom: 40px;
+  font-size: 1.5rem;
+}
+
+nav {
+  flex: 1;
+}
+
+.nav-item {
+  width: 100%;
+  text-align: left;
+  background: #374151;
+  color: white;
+  border: none;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: #2563eb;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.top-section {
+  margin-bottom: 30px;
+}
+
+.top-section h1 {
+  font-size: 2.3rem;
+  margin: 0;
+}
+
+.top-section p {
+  color: #6b7280;
+  margin-top: 8px;
+}
+
+.content-card {
+  background: white;
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.card-header h2 {
+  margin: 0;
+}
+
+.card-header span {
+  color: #6b7280;
+}
+
+.user-row {
+  display: grid;
+  grid-template-columns: 55px 1fr auto auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 0;
+  border-top: 1px solid #eee;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  background: #dbeafe;
+  color: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+}
+
+.user-info h3 {
+  margin: 0;
+}
+
+.user-info p {
+  margin: 4px 0 0;
+  color: #6b7280;
+}
+
+.status {
+  background: #fff7ed;
+  color: #c2410c;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.approve-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.approve-btn:hover {
+  background: #15803d;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #6b7280;
+}
+
+.empty-state h3 {
+  color: #1f2937;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 520px;
+  background: transparent;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.bottom-nav button {
+  background: #1f2937;
+  color: white;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.bottom-nav button:hover,
+.bottom-nav button.active {
+  background: #374151;
+}
+
+.iban-search {
+  background: #f1f5f9;
+  padding: 18px;
+  border-radius: 14px;
+  margin: 16px 0;
+}
+
+.iban-search h2 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px; /* fixed width for button */
+  gap: 12px;
+  align-items: center;
+}
+
+.search-row input {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.search-row button {
+  height: 100%;
+  background: #1f2937;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.search-row button,
+.iban-result button {
+  background: #1f2937;
+  color: white;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.iban-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+  background: white;
+  border-radius: 12px;
+}
+
+.iban-result p {
+  margin: 4px 0 0;
+  color: #6b7280;
+}
