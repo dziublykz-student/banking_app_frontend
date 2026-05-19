@@ -55,7 +55,8 @@ async function loginUser() {
       body: JSON.stringify(form)
     })
 
-    const data = await response.json()
+    const text = await response.text()
+    const data = text ? JSON.parse(text) : {}
 
     if (!response.ok) {
       throw new Error(data.message || 'Login failed')

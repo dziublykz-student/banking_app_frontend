@@ -657,3 +657,29 @@ nav {
   border-radius: 20px;
   font-size: 0.85rem;
 }
+
+.closed-section {
+  margin-top: 30px;
+}
+
+.closed-status {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.close-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.close-btn:hover {
+  background: #b91c1c;
+}
