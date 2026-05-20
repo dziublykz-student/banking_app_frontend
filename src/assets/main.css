@@ -442,7 +442,8 @@ nav {
   background: #374151;
   color: white;
   border: none;
-  padding: 14px 16px;
+  padding: 10px 10px;
+  margin-top: 10px;
   border-radius: 12px;
   font-size: 1rem;
   cursor: pointer;
@@ -682,4 +683,135 @@ nav {
 
 .close-btn:hover {
   background: #b91c1c;
+}
+
+.customer-account-row {
+  display: grid;
+  grid-template-columns: 55px 1fr 220px auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 0;
+  border-top: 1px solid #eee;
+}
+
+.balance-info p {
+  margin: 0 0 5px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.balance-info strong {
+  color: #1f2937;
+}
+
+.change-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.limits-section {
+  margin-top: 30px;
+}
+
+.close-panel-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.limit-account-row {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 0;
+  border-top: 1px solid #eee;
+}
+
+.limit-account-row h3 {
+  margin: 0;
+}
+
+.limit-account-row p {
+  margin: 5px 0 0;
+  color: #6b7280;
+}
+
+.limit-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.limit-inputs label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.limit-inputs input {
+  margin-top: 6px;
+  padding: 11px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.limit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.save-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.save-btn:hover {
+  background: #1d4ed8;
+}
+
+.success-message {
+  background: #dcfce7;
+  color: #166534;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  font-weight: 600;
 }
