@@ -19,35 +19,51 @@
         >
           💳 Customer Limits
         </button>
+
+        <button
+          class="nav-item"
+          :class="{ active: activeTab === 'transactions' }"
+          @click="activeTab = 'transactions'"
+        >
+          🔁 Transactions
+        </button>
       </nav>
 
       <button class="logout-btn" @click="logout">Logout</button>
     </aside>
 
     <main class="main-content">
-
       <header class="top-section">
-
         <p v-if="successMessage" class="success-message">
-            {{ successMessage }}
+          {{ successMessage }}
         </p>
 
         <p v-if="errorMessage" class="error-message">
-            {{ errorMessage }}
+          {{ errorMessage }}
         </p>
-        
+
         <div>
-          <h1>{{ activeTab === 'users' ? 'Users' : 'Customer Accounts' }}</h1>
+          <h1>
+            {{
+              activeTab === 'users'
+                ? 'Users'
+                : activeTab === 'accounts'
+                  ? 'Customer Accounts'
+                  : 'Transactions'
+            }}
+          </h1>
+
           <p>
             {{
               activeTab === 'users'
                 ? 'Manage customer approvals and account status'
-                : 'View customer accounts and update transfer limits'
+                : activeTab === 'accounts'
+                  ? 'View customer accounts and update transfer limits'
+                  : 'View all customer transactions'
             }}
           </p>
         </div>
       </header>
-    
 
       <div v-if="activeTab === 'users'">
         <section class="content-card">
@@ -218,7 +234,47 @@
             </button>
           </div>
         </section>
+      </div>
 
+      <div v-if="activeTab === 'transactions'">
+        <section class="content-card">
+          <div class="card-header">
+            <h2>All Transactions</h2>
+            <span>{{ transactions.length }} transactions</span>
+          </div>
+
+          <div v-if="transactions.length === 0" class="empty-state">
+            <h3>No transactions</h3>
+            <p>Transactions will appear here after customers make transfers.</p>
+          </div>
+
+          <div
+            v-for="transaction in transactions"
+            :key="transaction.id"
+            class="transaction-admin-row"
+          >
+            <div class="transaction-main">
+              <h3>{{ formatMoney(transaction.amount) }}</h3>
+              <span class="transaction-type">{{ transaction.type }}</span>
+            </div>
+
+            <div class="transaction-details">
+              <p>
+                <strong>From:</strong> {{ transaction.fromIban }}
+              </p>
+              <p>
+                <strong>To:</strong> {{ transaction.toIban }}
+              </p>
+              <p>
+                <strong>Description:</strong> {{ transaction.description || 'No description' }}
+              </p>
+            </div>
+
+            <span class="transaction-date">
+            {{ formatDate(transaction.timestamp) }}
+            </span>
+          </div>
+        </section>
       </div>
     </main>
   </div>
@@ -229,12 +285,17 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
 const users = ref([])
 const approvedUsers = ref([])
 const closedUsers = ref([])
 const activeTab = ref('users')
+
 const customerAccounts = ref([])
 const selectedCustomer = ref(null)
+
+const transactions = ref([])
+
 const successMessage = ref('')
 const errorMessage = ref('')
 
@@ -265,33 +326,8 @@ function formatMoney(value) {
   }).format(value)
 }
 
-async function saveCustomerLimits() {
-  successMessage.value = ''
-  errorMessage.value = ''
-
-  try {
-    for (const account of selectedCustomer.value.accounts) {
-      await updateLimits(account)
-    }
-
-    await fetchCustomerAccounts()
-
-    successMessage.value = 'Limits updated successfully.'
-    selectedCustomer.value = null
-
-    setTimeout(() => {
-      successMessage.value = ''
-    }, 2000)
-
-  } catch (err) {
-    console.error(err)
-
-    errorMessage.value = 'Could not update limits.'
-
-    setTimeout(() => {
-      errorMessage.value = ''
-    }, 3000)
-  }
+function formatDate(value) {
+  return new Date(value).toLocaleString('nl-NL')
 }
 
 function logout() {
@@ -300,13 +336,21 @@ function logout() {
 }
 
 async function fetchPendingUsers() {
-  const response = await fetch('http://localhost:8080/users/pending', {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
-  })
+  try {
+    const response = await fetch('http://localhost:8080/users/pending', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
 
-  users.value = await response.json()
+    if (!response.ok) {
+      throw new Error('Could not fetch pending users')
+    }
+
+    users.value = await response.json()
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 async function fetchApprovedUsers() {
@@ -317,13 +361,14 @@ async function fetchApprovedUsers() {
       }
     })
 
+    if (!response.ok) {
+      throw new Error('Could not fetch approved users')
+    }
+
     approvedUsers.value = await response.json()
-    console.log('Approved users:', approvedUsers.value)
-    
   } catch (err) {
-    console.error('Could not fetch approved users', err)
+    console.error(err)
   }
-    
 }
 
 async function fetchClosedUsers() {
@@ -340,7 +385,7 @@ async function fetchClosedUsers() {
 
     closedUsers.value = await response.json()
   } catch (err) {
-    console.error('Could not fetch closed users', err)
+    console.error(err)
   }
 }
 
@@ -360,11 +405,10 @@ async function approveUser(id) {
     const approvedUser = await response.json()
 
     users.value = users.value.filter(user => user.id !== id)
-
     approvedUsers.value.push(approvedUser)
 
-    await fetchApprovedUsers() 
-
+    await fetchApprovedUsers()
+    await fetchCustomerAccounts()
   } catch (err) {
     console.error(err)
   }
@@ -386,9 +430,9 @@ async function closeUser(id) {
     const closedUser = await response.json()
 
     approvedUsers.value = approvedUsers.value.filter(user => user.id !== id)
-
     closedUsers.value.push(closedUser)
 
+    await fetchCustomerAccounts()
   } catch (err) {
     console.error(err)
   }
@@ -414,24 +458,64 @@ async function fetchCustomerAccounts() {
 }
 
 async function updateLimits(account) {
-  try {
-    const response = await fetch(`http://localhost:8080/accounts/${account.id}/limits`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        absoluteTransferLimit: account.absoluteTransferLimit,
-        dailyTransferLimit: account.dailyTransferLimit
-      })
+  const response = await fetch(`http://localhost:8080/accounts/${account.id}/limits`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify({
+      absoluteTransferLimit: account.absoluteTransferLimit,
+      dailyTransferLimit: account.dailyTransferLimit
     })
+  })
 
-    if (!response.ok) {
-      throw new Error('Could not update limits')
+  if (!response.ok) {
+    throw new Error('Could not update limits')
+  }
+}
+
+async function saveCustomerLimits() {
+  successMessage.value = ''
+  errorMessage.value = ''
+
+  try {
+    for (const account of selectedCustomer.value.accounts) {
+      await updateLimits(account)
     }
 
     await fetchCustomerAccounts()
+
+    successMessage.value = 'Limits updated successfully.'
+    selectedCustomer.value = null
+
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 2000)
+  } catch (err) {
+    console.error(err)
+
+    errorMessage.value = 'Could not update limits.'
+
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 3000)
+  }
+}
+
+async function fetchTransactions() {
+  try {
+    const response = await fetch('http://localhost:8080/transactions', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Could not fetch transactions')
+    }
+
+    transactions.value = await response.json()
   } catch (err) {
     console.error(err)
   }
@@ -442,5 +526,50 @@ onMounted(() => {
   fetchApprovedUsers()
   fetchClosedUsers()
   fetchCustomerAccounts()
+  fetchTransactions()
 })
 </script>
+
+
+<style>
+.transaction-admin-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 190px;
+  gap: 24px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.transaction-main h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.transaction-type {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.transaction-details p {
+  margin: 4px 0;
+  color: #4b5563;
+  word-break: break-all;
+}
+
+.transaction-date {
+  justify-self: end;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 14px;
+  white-space: nowrap;
+}
+</style>
