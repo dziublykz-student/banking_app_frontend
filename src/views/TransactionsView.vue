@@ -27,7 +27,19 @@
 
         <strong>{{ formatMoney(transaction.amount) }}</strong>
       </div>
-    </section>
+
+      <div class="pagination-controls" v-if="totalPages > 1">
+        <button type="button" :disabled="isFirst" @click="previousPage">
+          Previous
+        </button>
+
+        <span>Page {{ page + 1 }} of {{ totalPages }}</span>
+
+        <button type="button" :disabled="isLast" @click="nextPage">
+          Next
+        </button>
+      </div>
+  </section>
 
     <nav class="bottom-nav">
       <button @click="router.push('/dashboard')">Home</button>
@@ -46,23 +58,51 @@ const router = useRouter()
 const transactions = ref([])
 const error = ref('')
 
+const page = ref(0)
+const size = ref(5)
+const totalPages = ref(0)
+const isFirst = ref(true)
+const isLast = ref(true)
+
 async function fetchTransactions() {
   error.value = ''
 
   try {
-    const response = await fetch('http://localhost:8080/transactions/my-transactions', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+    const response = await fetch(
+      `http://localhost:8080/transactions/my-transactions?page=${page.value}&size=${size.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
       }
-    })
+    )
 
     if (!response.ok) {
       throw new Error('Could not load transactions')
     }
 
-    transactions.value = await response.json()
+    const data = await response.json()
+
+    transactions.value = data.content
+    totalPages.value = data.totalPages
+    isFirst.value = data.first
+    isLast.value = data.last
   } catch (err) {
     error.value = err.message
+  }
+}
+
+async function nextPage() {
+  if (!isLast.value) {
+    page.value++
+    await fetchTransactions()
+  }
+}
+
+async function previousPage() {
+  if (!isFirst.value) {
+    page.value--
+    await fetchTransactions()
   }
 }
 
