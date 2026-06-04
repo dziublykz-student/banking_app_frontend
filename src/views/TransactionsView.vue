@@ -9,16 +9,37 @@
     </header>
 
     <section class="transactions">
-      <div v-for="transaction in transactions" :key="transaction.id" class="transaction-row">
+      <p v-if="error" class="error-message">{{ error }}</p>
 
+      <div v-if="transactions.length === 0 && !error">
+        No transactions found.
+      </div>
+
+      <div v-for="transaction in transactions" :key="transaction.id" class="transaction-row">
         <div>
-          <p>{{ transaction.description }}</p>
-          <small>{{ transaction.timestamp }} • {{ transaction.type }}</small>
+          <p>{{ transaction.description || 'Transfer' }}</p>
+          <small>
+            {{ transaction.fromIban }} → {{ transaction.toIban }}
+            • {{ formatDate(transaction.timestamp) }}
+            • {{ transaction.type }}
+          </small>
         </div>
 
         <strong>{{ formatMoney(transaction.amount) }}</strong>
       </div>
-    </section>
+
+      <div class="pagination-controls" v-if="totalPages > 1">
+        <button type="button" :disabled="isFirst" @click="previousPage">
+          Previous
+        </button>
+
+        <span>Page {{ page + 1 }} of {{ totalPages }}</span>
+
+        <button type="button" :disabled="isLast" @click="nextPage">
+          Next
+        </button>
+      </div>
+  </section>
 
     <nav class="bottom-nav">
       <button @click="router.push('/dashboard')">Home</button>
@@ -29,35 +50,61 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-//Dummy data just to show the layout
-const transactions = ref([
-  {
-    id: 1,
-    description: 'Initial deposit',
-    type: 'DEPOSIT',
-    amount: 1850.75,
-    timestamp: '2026-05-09'
-  },
-  {
-    id: 2,
-    description: 'Transfer to savings',
-    type: 'TRANSFER',
-    amount: 600.00,
-    timestamp: '2026-05-10'
-  },
-  {
-    id: 3,
-    description: 'Grocery store',
-    type: 'WITHDRAWAL',
-    amount: 34.2,
-    timestamp: '2026-05-11'
+const transactions = ref([])
+const error = ref('')
+
+const page = ref(0)
+const size = ref(5)
+const totalPages = ref(0)
+const isFirst = ref(true)
+const isLast = ref(true)
+
+async function fetchTransactions() {
+  error.value = ''
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/transactions/my-transactions?page=${page.value}&size=${size.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Could not load transactions')
+    }
+
+    const data = await response.json()
+
+    transactions.value = data.content
+    totalPages.value = data.totalPages
+    isFirst.value = data.first
+    isLast.value = data.last
+  } catch (err) {
+    error.value = err.message
   }
-])
+}
+
+async function nextPage() {
+  if (!isLast.value) {
+    page.value++
+    await fetchTransactions()
+  }
+}
+
+async function previousPage() {
+  if (!isFirst.value) {
+    page.value--
+    await fetchTransactions()
+  }
+}
 
 function formatMoney(value) {
   return new Intl.NumberFormat('nl-NL', {
@@ -65,4 +112,10 @@ function formatMoney(value) {
     currency: 'EUR'
   }).format(value)
 }
+
+function formatDate(value) {
+  return new Date(value).toLocaleString('nl-NL')
+}
+
+onMounted(fetchTransactions)
 </script>

@@ -18,19 +18,23 @@
       <form @submit.prevent="submitTransfer" class="transfer-form">
         <div class="form-group">
           <label>From account</label>
-          <select v-model="form.fromAccount" required>
+          <select v-model="form.fromIban" required>
             <option value="">Select account</option>
-            <option value="checking">Checking account</option>
-            <option value="savings">Savings account</option>
+            <option v-for="account in accounts" :key="account.id" :value="account.iban">
+              {{ account.type }} - {{ account.iban }} - {{ formatMoney(account.balance)}}
+            </option>]
           </select>
         </div>
 
         <div v-if="transferType === 'own'" class="form-group">
           <label>To account</label>
-          <select v-model="form.toAccount" required>
+          <select v-model="form.toIban" required>
             <option value="">Select account</option>
-            <option value="checking">Checking account</option>
-            <option value="savings">Savings account</option>
+            <option v-for="account in accounts"
+              :key="account.id"
+              :value="account.iban">
+              {{ account.type }} - {{ account.iban }} - {{ formatMoney(account.balance)}}
+            </option>
           </select>
         </div>
 
@@ -81,17 +85,18 @@
 
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const transferType = ref('own')
 const message = ref('')
 const error = ref('')
+const accounts = ref([])
 
 const form = reactive({
-  fromAccount: '',
-  toAccount: '',
+  fromIban: '',
+  toIban: '',
   recipient: '',
   amount: '',
   description: ''
@@ -105,7 +110,7 @@ const search = reactive({
 const searchResults = ref([])
 
 watch(transferType, () => {
-  form.toAccount = ''
+  form.toIban = ''
   form.recipient = ''
   search.firstName = ''
   search.lastName = ''
@@ -113,6 +118,24 @@ watch(transferType, () => {
   message.value = ''
   error.value = ''
 })
+
+async function fetchAccounts() {
+  try {
+    const response = await fetch('http://localhost:8080/accounts/my-accounts', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Could not load accounts')
+    }
+
+    accounts.value = await response.json()
+  } catch (err) {
+    error.value = err.message
+  }
+}
 
 async function searchIbans() {
   error.value = ''
@@ -141,22 +164,56 @@ async function submitTransfer() {
   message.value = ''
   error.value = ''
 
-  if (transferType.value === 'own' && form.fromAccount === form.toAccount) {
+  const toIban = transferType.value === 'own'
+    ? form.toIban
+    : form.recipient
+
+  if (form.fromIban === toIban) {
     error.value = 'You cannot transfer to the same account.'
     return
   }
 
-  console.log({
-    transferType: transferType.value,
-    ...form
-  })
+  try {
+    const response = await fetch('http://localhost:8080/transactions/transfer', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        fromIban: form.fromIban,
+        toIban: toIban,
+        amount: Number(form.amount),
+        description: form.description
+      })
+    })
 
-  message.value = 'Transfer submitted successfully.'
+    const data = await response.json().catch(() => ({}))
 
-  form.fromAccount = ''
-  form.toAccount = ''
-  form.recipient = ''
-  form.amount = ''
-  form.description = ''
+    if (!response.ok) {
+      throw new Error(data.message || 'Transfer failed')
+    }
+
+    message.value = 'Transfer completed successfully.'
+
+    form.fromIban = ''
+    form.toIban = ''
+    form.recipient = ''
+    form.amount = ''
+    form.description = ''
+
+    await fetchAccounts()
+  } catch (err) {
+    error.value = err.message
+  }
 }
+
+function formatMoney(value) {
+  return new Intl.NumberFormat('nl-NL', {
+    style: 'currency',
+    currency: 'EUR'
+  }).format(value)
+}
+
+onMounted(fetchAccounts)
 </script>
