@@ -283,6 +283,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
 const router = useRouter()
 
@@ -337,7 +338,7 @@ function logout() {
 
 async function fetchPendingUsers() {
   try {
-    const response = await fetch('http://localhost:8080/users/pending', {
+    const response = await fetch(`${API_DOMAIN}/users/pending`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -355,7 +356,7 @@ async function fetchPendingUsers() {
 
 async function fetchApprovedUsers() {
   try {
-    const response = await fetch('http://localhost:8080/users/approved', {
+    const response = await fetch(`${API_DOMAIN}/users/approved`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -373,7 +374,7 @@ async function fetchApprovedUsers() {
 
 async function fetchClosedUsers() {
   try {
-    const response = await fetch('http://localhost:8080/users/closed', {
+    const response = await fetch(`${API_DOMAIN}/users/closed`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -391,7 +392,7 @@ async function fetchClosedUsers() {
 
 async function approveUser(id) {
   try {
-    const response = await fetch(`http://localhost:8080/users/${id}/approve`, {
+    const response = await fetch(`${API_DOMAIN}/users/${id}/approve`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -416,7 +417,7 @@ async function approveUser(id) {
 
 async function closeUser(id) {
   try {
-    const response = await fetch(`http://localhost:8080/users/${id}/close`, {
+    const response = await fetch(`${API_DOMAIN}/users/${id}/close`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -440,7 +441,7 @@ async function closeUser(id) {
 
 async function fetchCustomerAccounts() {
   try {
-    const response = await fetch('http://localhost:8080/accounts/employee/customer-accounts?page=0&size=50', {
+    const response = await fetch(`${API_DOMAIN}/accounts/employee/customer-accounts?page=0&size=50`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -458,7 +459,7 @@ async function fetchCustomerAccounts() {
 }
 
 async function updateLimits(account) {
-  const response = await fetch(`http://localhost:8080/accounts/${account.id}/limits`, {
+  const response = await fetch(`${API_DOMAIN}/accounts/${account.id}/limits`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -505,7 +506,7 @@ async function saveCustomerLimits() {
 
 async function fetchTransactions() {
   try {
-    const response = await fetch('http://localhost:8080/transactions', {
+    const response = await fetch(`${API_DOMAIN}/transactions`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

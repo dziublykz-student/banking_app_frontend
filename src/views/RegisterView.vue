@@ -60,6 +60,7 @@
 <script setup>
 import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
 const form = reactive({
   firstName: '',
@@ -85,7 +86,7 @@ async function registerUser() {
   error.value = ''
 
   try {
-    const response = await fetch('http://localhost:8080/auth/register', {
+    const response = await fetch(`${API_DOMAIN}/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -52,6 +52,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
 const router = useRouter()
 
@@ -69,7 +70,7 @@ async function fetchTransactions() {
 
   try {
     const response = await fetch(
-      `http://localhost:8080/transactions/my-transactions?page=${page.value}&size=${size.value}`,
+      `${API_DOMAIN}/transactions/my-transactions?page=${page.value}&size=${size.value}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`

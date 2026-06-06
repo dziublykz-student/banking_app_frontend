@@ -55,6 +55,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
 const router = useRouter()
 const firstName = localStorage.getItem('firstName') || 'Customer'
@@ -76,7 +77,7 @@ const checkingAccount = computed(() =>
 
 async function fetchAccounts() {
   try {
-    const response = await fetch('http://localhost:8080/accounts/my-accounts', {
+    const response = await fetch(`${API_DOMAIN}/accounts/my-accounts`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

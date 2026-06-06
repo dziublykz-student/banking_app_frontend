@@ -87,6 +87,7 @@
 <script setup>
 import { reactive, ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
 const router = useRouter()
 const transferType = ref('own')
@@ -121,7 +122,7 @@ watch(transferType, () => {
 
 async function fetchAccounts() {
   try {
-    const response = await fetch('http://localhost:8080/accounts/my-accounts', {
+    const response = await fetch(`${API_DOMAIN}/accounts/my-accounts`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -142,7 +143,7 @@ async function searchIbans() {
 
   try {
     const response = await fetch(
-      `http://localhost:8080/users/search-ibans?firstName=${search.firstName}&lastName=${search.lastName}`,
+      `${API_DOMAIN}/users/search-ibans?firstName=${search.firstName}&lastName=${search.lastName}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -174,7 +175,7 @@ async function submitTransfer() {
   }
 
   try {
-    const response = await fetch('http://localhost:8080/transactions/transfer', {
+    const response = await fetch(`${API_DOMAIN}/transactions/transfer`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
