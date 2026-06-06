@@ -12,6 +12,7 @@
     <section class="quick-actions">
       <button @click="goToTransfer">Transfer</button>
       <button @click="router.push('/transactions')">Transactions</button>
+     
     </section>
 
     <section class="balance-card">

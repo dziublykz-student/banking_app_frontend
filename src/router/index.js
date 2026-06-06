@@ -5,13 +5,16 @@ import DashboardView from '../views/DashboardView.vue'
 import PendingApprovalView from '../views/PendingApprovalView.vue'
 import EmployeeDashboardView from '../views/EmployeeDashboardView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import LandingView from '../views/LandingView.vue'
 //import ProfileView from '../views/ProfileView.vue'
 //import HelpView from '../views/HelpView.vue'
 import TransferView from '../views/TransferView.vue'
 import TransactionsView from '../views/TransactionsView.vue'
+import AtmLoginView from '../views/atm/AtmLoginView.vue'
+import AtmView from '../views/atm/AtmView.vue'
 
 const routes = [
-  { path: '/', redirect: '/login' },
+  { path: '/', name: 'landing', component: LandingView },   
   { path: '/login', name: 'login', component: LoginView },
   { path: '/register', name: 'register', component: RegisterView },
   { path: '/pending-approval', name: 'pendingApproval', component: PendingApprovalView },
@@ -20,9 +23,12 @@ const routes = [
   { path: '/transfer', name: 'transfer', component: TransferView },
   //{ path: '/help', name: 'help', component: HelpView },
   { path: '/profile', name: 'profile', component: ProfileView },
-  { path: '/transactions', name: 'transactions', component: TransactionsView}, 
+  { path: '/transactions', name: 'transactions', component: TransactionsView },
 
-  { path: '/employee-dashboard', name: 'employeeDashboard', component: EmployeeDashboardView }
+  { path: '/employee-dashboard', name: 'employeeDashboard', component: EmployeeDashboardView },
+
+  { path: '/atm-login', name: 'atmLogin', component: AtmLoginView },
+  { path: '/atm',       name: 'atm',      component: AtmView },
 ]
 
 const router = createRouter({

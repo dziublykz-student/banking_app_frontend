@@ -1,0 +1,73 @@
+.landing-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #1a1a2e;
+  padding: 1rem;
+}
+
+.landing-card {
+  background: #16213e;
+  padding: 3rem;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  color: #e0e0e0;
+  text-align: center;
+}
+
+.landing-card h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #a0a0b0;
+  margin-bottom: 2.5rem;
+}
+
+.landing-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .landing-actions { grid-template-columns: 1fr; }
+}
+
+.landing-option {
+  background: #1a1a2e;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.landing-option:hover {
+  border-color: #4ecca3;
+  transform: translateY(-4px);
+}
+
+.landing-option .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.landing-option h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.landing-option p {
+  color: #a0a0b0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.landing-option.online:hover { border-color: #4ecca3; }
+.landing-option.atm:hover    { border-color: #e63946; }
