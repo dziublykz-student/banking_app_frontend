@@ -14,6 +14,32 @@
         type="text"
         placeholder="Filter by IBAN"
       />
+
+      <input
+        v-model="startDateFilter"
+        type="date"
+      />
+
+      <input
+        v-model="endDateFilter"
+        type="date"
+      />
+
+      <input
+        v-model="amountFilterValue"
+        type="number"
+        min="0.01"
+        step="0.01"
+        placeholder="Amount"
+      />
+
+      <select v-model="amountFilterType">
+        <option value="">Amount Filter</option>
+        <option value="LESS_THAN">Less than</option>
+        <option value="GREATER_THAN">Greater than</option>
+        <option value="EQUAL_TO">Equal to</option>
+      </select>
+      
       <button type="button" @click="applyFilters">
         Search
       </button>
@@ -79,14 +105,27 @@ const totalPages = ref(0)
 const isFirst = ref(true)
 const isLast = ref(true)
 const ibanFilter = ref('')
+const startDateFilter = ref('')
+const endDateFilter = ref('')
+const amountFilterValue = ref('')
+const amountFilterType = ref('')
 
 async function fetchTransactions() {
   error.value = ''
 
   try {
     let url = `${API_DOMAIN}/transactions/my-transactions?page=${page.value}&size=${size.value}`
-    if (ibanFilter.value) {
+    if (ibanFilter.value.trim()) {
       url += `&iban=${encodeURIComponent(ibanFilter.value.trim())}`
+    }
+
+    if (startDateFilter.value && endDateFilter.value) {
+      url += `&startDate=${startDateFilter.value}&endDate=${endDateFilter.value}`
+    }
+    
+    if (amountFilterValue.value && amountFilterType.value) {
+      url += `&amount=${encodeURIComponent(amountFilterValue.value)}`
+      url += `&amountFilter=${amountFilterType.value}`
     }
 
     const response = await fetch(url, {
@@ -117,6 +156,10 @@ async function applyFilters() {
 
 async function clearFilters() {
   ibanFilter.value = ''
+  startDateFilter.value = ''
+  endDateFilter.value = ''
+  amountFilterValue.value = ''
+  amountFilterType.value = ''
   page.value = 0
   await fetchTransactions()
 }
