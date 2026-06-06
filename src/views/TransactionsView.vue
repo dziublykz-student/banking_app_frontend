@@ -8,6 +8,20 @@
       </div>
     </header>
 
+    <section class="transaction-filters">
+      <input
+        v-model="ibanFilter"
+        type="text"
+        placeholder="Filter by IBAN"
+      />
+      <button type="button" @click="applyFilters">
+        Search
+      </button>
+      <button type="button" @click="clearFilters">
+        Clear
+      </button>
+    </section>
+
     <section class="transactions">
       <p v-if="error" class="error-message">{{ error }}</p>
 
@@ -64,19 +78,22 @@ const size = ref(5)
 const totalPages = ref(0)
 const isFirst = ref(true)
 const isLast = ref(true)
+const ibanFilter = ref('')
 
 async function fetchTransactions() {
   error.value = ''
 
   try {
-    const response = await fetch(
-      `${API_DOMAIN}/transactions/my-transactions?page=${page.value}&size=${size.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+    let url = `${API_DOMAIN}/transactions/my-transactions?page=${page.value}&size=${size.value}`
+    if (ibanFilter.value) {
+      url += `&iban=${encodeURIComponent(ibanFilter.value.trim())}`
+    }
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-    )
+    })
 
     if (!response.ok) {
       throw new Error('Could not load transactions')
@@ -91,6 +108,17 @@ async function fetchTransactions() {
   } catch (err) {
     error.value = err.message
   }
+}
+
+async function applyFilters() {
+  page.value = 0
+  await fetchTransactions()
+}
+
+async function clearFilters() {
+  ibanFilter.value = ''
+  page.value = 0
+  await fetchTransactions()
 }
 
 async function nextPage() {
