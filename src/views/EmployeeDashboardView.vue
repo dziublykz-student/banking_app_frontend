@@ -118,8 +118,83 @@
 
             <span class="approved-status">Approved</span>
 
+            <button class="change-btn" @click="viewCustomerTransactions(user)">
+              View Transactions
+            </button>
+
             <button class="close-btn" @click="closeUser(user.id)">
               Close
+            </button>
+          </div>
+        </section>
+
+        <section v-if="selectedTransactionCustomer" class="content-card">
+          <div class="card-header">
+            <div>
+              <h2>Customer Transaction History</h2>
+              <p>
+                {{ selectedTransactionCustomer.firstName }}
+                {{ selectedTransactionCustomer.lastName }}
+                — {{ selectedTransactionCustomer.email }}
+              </p>
+            </div>
+
+            <button class="close-panel-btn" @click="closeCustomerTransactionView">
+              ✕
+            </button>
+          </div>
+
+          <div v-if="customerTransactions.length === 0" class="empty-state">
+            <h3>No transactions</h3>
+            <p>This customer has no transactions yet.</p>
+          </div>
+
+          <div
+            v-for="transaction in customerTransactions"
+            :key="transaction.id"
+            class="transaction-admin-row"
+          >
+            <div class="transaction-main">
+              <h3>{{ formatMoney(transaction.amount) }}</h3>
+              <span class="transaction-type">{{ transaction.type }}</span>
+            </div>
+
+            <div class="transaction-details">
+              <p>
+                <strong>From:</strong> {{ transaction.fromIban }}
+              </p>
+              <p>
+                <strong>To:</strong> {{ transaction.toIban }}
+              </p>
+              <p>
+                <strong>Description:</strong> {{ transaction.description || 'No description' }}
+              </p>
+            </div>
+
+            <span class="transaction-date">
+              {{ formatDate(transaction.timestamp) }}
+            </span>
+          </div>
+
+          <div class="pagination-controls" v-if="customerTransactionTotalPages > 1">
+            <button
+              type="button"
+              :disabled="customerTransactionIsFirst"
+              @click="previousCustomerTransactionPage"
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {{ customerTransactionPage + 1 }} of {{ customerTransactionTotalPages }}
+            </span>
+
+            <button
+              type="button"
+              :disabled="customerTransactionIsLast"
+              @click="nextCustomerTransactionPage"
+            >
+              Next
             </button>
           </div>
         </section>
@@ -296,6 +371,13 @@ const customerAccounts = ref([])
 const selectedCustomer = ref(null)
 
 const transactions = ref([])
+const selectedTransactionCustomer = ref(null)
+const customerTransactions = ref([])
+const customerTransactionPage = ref(0)
+const customerTransactionSize = ref(5)
+const customerTransactionTotalPages = ref(0)
+const customerTransactionIsFirst = ref(true)
+const customerTransactionIsLast = ref(true)
 
 const successMessage = ref('')
 const errorMessage = ref('')
@@ -520,6 +602,62 @@ async function fetchTransactions() {
   } catch (err) {
     console.error(err)
   }
+}
+
+async function viewCustomerTransactions(customer) {
+  selectedTransactionCustomer.value = customer
+  customerTransactionPage.value = 0
+  await fetchCustomerTransactions()
+}
+
+async function fetchCustomerTransactions() {
+  if (!selectedTransactionCustomer.value) {
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `${API_DOMAIN}/transactions/customer/${selectedTransactionCustomer.value.id}?page=${customerTransactionPage.value}&size=${customerTransactionSize.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Could not fetch customer transactions')
+    }
+
+    const data = await response.json()
+
+    customerTransactions.value = data.content
+    customerTransactionTotalPages.value = data.totalPages
+    customerTransactionIsFirst.value = data.first
+    customerTransactionIsLast.value = data.last
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function nextCustomerTransactionPage() {
+  if (!customerTransactionIsLast.value) {
+    customerTransactionPage.value++
+    await fetchCustomerTransactions()
+  }
+}
+
+async function previousCustomerTransactionPage() {
+  if (!customerTransactionIsFirst.value) {
+    customerTransactionPage.value--
+    await fetchCustomerTransactions()
+  }
+}
+
+function closeCustomerTransactionView() {
+  selectedTransactionCustomer.value = null
+  customerTransactions.value = []
+  customerTransactionPage.value = 0
 }
 
 onMounted(() => {
