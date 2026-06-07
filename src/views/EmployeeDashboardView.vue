@@ -314,6 +314,62 @@
       <div v-if="activeTab === 'transactions'">
         <section class="content-card">
           <div class="card-header">
+            <div>
+              <h2>Employee Transfer</h2>
+              <p>Transfer funds between customer checking accounts.</p>
+            </div>
+          </div>
+
+          <form class="employee-transfer-form" @submit.prevent="submitEmployeeTransfer">
+            <label>
+              From IBAN
+              <input
+                v-model="employeeTransferForm.fromIban"
+                type="text"
+                required
+                placeholder="Source customer IBAN"
+              />
+            </label>
+
+            <label>
+              To IBAN
+              <input
+                v-model="employeeTransferForm.toIban"
+                type="text"
+                required
+                placeholder="Destination customer IBAN"
+              />
+            </label>
+
+            <label>
+              Amount
+              <input
+                v-model="employeeTransferForm.amount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                required
+                placeholder="Amount"
+              />
+            </label>
+
+            <label>
+              Description
+              <input
+                v-model="employeeTransferForm.description"
+                type="text"
+                placeholder="Optional description"
+              />
+            </label>
+
+            <button class="save-btn" type="submit">
+              Transfer Funds
+            </button>
+          </form>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
             <h2>All Transactions</h2>
             <span>{{ transactions.length }} transactions</span>
           </div>
@@ -346,7 +402,7 @@
             </div>
 
             <span class="transaction-date">
-            {{ formatDate(transaction.timestamp) }}
+              {{ formatDate(transaction.timestamp) }}
             </span>
           </div>
         </section>
@@ -358,8 +414,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 const router = useRouter()
 
 const users = ref([])
@@ -381,6 +437,13 @@ const customerTransactionIsLast = ref(true)
 
 const successMessage = ref('')
 const errorMessage = ref('')
+
+const employeeTransferForm = ref({
+  fromIban: '',
+  toIban: '',
+  amount: '',
+  description: ''
+})
 
 const groupedCustomerAccounts = computed(() => {
   const groups = {}
@@ -586,6 +649,55 @@ async function saveCustomerLimits() {
   }
 }
 
+async function submitEmployeeTransfer() {
+  successMessage.value = ''
+  errorMessage.value = ''
+
+  try {
+    const response = await fetch(`${API_DOMAIN}/transactions/employee-transfer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        fromIban: employeeTransferForm.value.fromIban,
+        toIban: employeeTransferForm.value.toIban,
+        amount: Number(employeeTransferForm.value.amount),
+        description: employeeTransferForm.value.description
+      })
+    })
+
+    const data = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not complete employee transfer')
+    }
+
+    successMessage.value = 'Employee transfer completed successfully.'
+
+    employeeTransferForm.value = {
+      fromIban: '',
+      toIban: '',
+      amount: '',
+      description: ''
+    }
+
+    await fetchTransactions()
+    await fetchCustomerAccounts()
+
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 2500)
+  } catch (err) {
+    errorMessage.value = err.message
+
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 3000)
+  }
+}
+
 async function fetchTransactions() {
   try {
     const response = await fetch(`${API_DOMAIN}/transactions`, {
@@ -669,7 +781,6 @@ onMounted(() => {
 })
 </script>
 
-
 <style>
 .transaction-admin-row {
   display: grid;
@@ -710,5 +821,31 @@ onMounted(() => {
   color: #c2410c;
   font-size: 14px;
   white-space: nowrap;
+}
+
+.employee-transfer-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.employee-transfer-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.employee-transfer-form input {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.employee-transfer-form button {
+  grid-column: span 2;
+  justify-self: flex-start;
 }
 </style>
