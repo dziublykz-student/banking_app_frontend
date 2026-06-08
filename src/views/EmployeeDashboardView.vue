@@ -118,8 +118,83 @@
 
             <span class="approved-status">Approved</span>
 
+            <button class="change-btn" @click="viewCustomerTransactions(user)">
+              View Transactions
+            </button>
+
             <button class="close-btn" @click="closeUser(user.id)">
               Close
+            </button>
+          </div>
+        </section>
+
+        <section v-if="selectedTransactionCustomer" class="content-card">
+          <div class="card-header">
+            <div>
+              <h2>Customer Transaction History</h2>
+              <p>
+                {{ selectedTransactionCustomer.firstName }}
+                {{ selectedTransactionCustomer.lastName }}
+                — {{ selectedTransactionCustomer.email }}
+              </p>
+            </div>
+
+            <button class="close-panel-btn" @click="closeCustomerTransactionView">
+              ✕
+            </button>
+          </div>
+
+          <div v-if="customerTransactions.length === 0" class="empty-state">
+            <h3>No transactions</h3>
+            <p>This customer has no transactions yet.</p>
+          </div>
+
+          <div
+            v-for="transaction in customerTransactions"
+            :key="transaction.id"
+            class="transaction-admin-row"
+          >
+            <div class="transaction-main">
+              <h3>{{ formatMoney(transaction.amount) }}</h3>
+              <span class="transaction-type">{{ transaction.type }}</span>
+            </div>
+
+            <div class="transaction-details">
+              <p>
+                <strong>From:</strong> {{ transaction.fromIban }}
+              </p>
+              <p>
+                <strong>To:</strong> {{ transaction.toIban }}
+              </p>
+              <p>
+                <strong>Description:</strong> {{ transaction.description || 'No description' }}
+              </p>
+            </div>
+
+            <span class="transaction-date">
+              {{ formatDate(transaction.timestamp) }}
+            </span>
+          </div>
+
+          <div class="pagination-controls" v-if="customerTransactionTotalPages > 1">
+            <button
+              type="button"
+              :disabled="customerTransactionIsFirst"
+              @click="previousCustomerTransactionPage"
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {{ customerTransactionPage + 1 }} of {{ customerTransactionTotalPages }}
+            </span>
+
+            <button
+              type="button"
+              :disabled="customerTransactionIsLast"
+              @click="nextCustomerTransactionPage"
+            >
+              Next
             </button>
           </div>
         </section>
@@ -239,6 +314,62 @@
       <div v-if="activeTab === 'transactions'">
         <section class="content-card">
           <div class="card-header">
+            <div>
+              <h2>Employee Transfer</h2>
+              <p>Transfer funds between customer checking accounts.</p>
+            </div>
+          </div>
+
+          <form class="employee-transfer-form" @submit.prevent="submitEmployeeTransfer">
+            <label>
+              From IBAN
+              <input
+                v-model="employeeTransferForm.fromIban"
+                type="text"
+                required
+                placeholder="Source customer IBAN"
+              />
+            </label>
+
+            <label>
+              To IBAN
+              <input
+                v-model="employeeTransferForm.toIban"
+                type="text"
+                required
+                placeholder="Destination customer IBAN"
+              />
+            </label>
+
+            <label>
+              Amount
+              <input
+                v-model="employeeTransferForm.amount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                required
+                placeholder="Amount"
+              />
+            </label>
+
+            <label>
+              Description
+              <input
+                v-model="employeeTransferForm.description"
+                type="text"
+                placeholder="Optional description"
+              />
+            </label>
+
+            <button class="save-btn" type="submit">
+              Transfer Funds
+            </button>
+          </form>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
             <h2>All Transactions</h2>
             <span>{{ transactions.length }} transactions</span>
           </div>
@@ -271,7 +402,7 @@
             </div>
 
             <span class="transaction-date">
-            {{ formatDate(transaction.timestamp) }}
+              {{ formatDate(transaction.timestamp) }}
             </span>
           </div>
         </section>
@@ -283,8 +414,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 
+const API_DOMAIN = import.meta.env.VITE_API_DOMAIN
 const router = useRouter()
 
 const users = ref([])
@@ -296,9 +427,23 @@ const customerAccounts = ref([])
 const selectedCustomer = ref(null)
 
 const transactions = ref([])
+const selectedTransactionCustomer = ref(null)
+const customerTransactions = ref([])
+const customerTransactionPage = ref(0)
+const customerTransactionSize = ref(5)
+const customerTransactionTotalPages = ref(0)
+const customerTransactionIsFirst = ref(true)
+const customerTransactionIsLast = ref(true)
 
 const successMessage = ref('')
 const errorMessage = ref('')
+
+const employeeTransferForm = ref({
+  fromIban: '',
+  toIban: '',
+  amount: '',
+  description: ''
+})
 
 const groupedCustomerAccounts = computed(() => {
   const groups = {}
@@ -504,6 +649,55 @@ async function saveCustomerLimits() {
   }
 }
 
+async function submitEmployeeTransfer() {
+  successMessage.value = ''
+  errorMessage.value = ''
+
+  try {
+    const response = await fetch(`${API_DOMAIN}/transactions/employee-transfer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({
+        fromIban: employeeTransferForm.value.fromIban,
+        toIban: employeeTransferForm.value.toIban,
+        amount: Number(employeeTransferForm.value.amount),
+        description: employeeTransferForm.value.description
+      })
+    })
+
+    const data = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Could not complete employee transfer')
+    }
+
+    successMessage.value = 'Employee transfer completed successfully.'
+
+    employeeTransferForm.value = {
+      fromIban: '',
+      toIban: '',
+      amount: '',
+      description: ''
+    }
+
+    await fetchTransactions()
+    await fetchCustomerAccounts()
+
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 2500)
+  } catch (err) {
+    errorMessage.value = err.message
+
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 3000)
+  }
+}
+
 async function fetchTransactions() {
   try {
     const response = await fetch(`${API_DOMAIN}/transactions`, {
@@ -522,6 +716,62 @@ async function fetchTransactions() {
   }
 }
 
+async function viewCustomerTransactions(customer) {
+  selectedTransactionCustomer.value = customer
+  customerTransactionPage.value = 0
+  await fetchCustomerTransactions()
+}
+
+async function fetchCustomerTransactions() {
+  if (!selectedTransactionCustomer.value) {
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `${API_DOMAIN}/transactions/customer/${selectedTransactionCustomer.value.id}?page=${customerTransactionPage.value}&size=${customerTransactionSize.value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Could not fetch customer transactions')
+    }
+
+    const data = await response.json()
+
+    customerTransactions.value = data.content
+    customerTransactionTotalPages.value = data.totalPages
+    customerTransactionIsFirst.value = data.first
+    customerTransactionIsLast.value = data.last
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function nextCustomerTransactionPage() {
+  if (!customerTransactionIsLast.value) {
+    customerTransactionPage.value++
+    await fetchCustomerTransactions()
+  }
+}
+
+async function previousCustomerTransactionPage() {
+  if (!customerTransactionIsFirst.value) {
+    customerTransactionPage.value--
+    await fetchCustomerTransactions()
+  }
+}
+
+function closeCustomerTransactionView() {
+  selectedTransactionCustomer.value = null
+  customerTransactions.value = []
+  customerTransactionPage.value = 0
+}
+
 onMounted(() => {
   fetchPendingUsers()
   fetchApprovedUsers()
@@ -530,7 +780,6 @@ onMounted(() => {
   fetchTransactions()
 })
 </script>
-
 
 <style>
 .transaction-admin-row {
@@ -572,5 +821,31 @@ onMounted(() => {
   color: #c2410c;
   font-size: 14px;
   white-space: nowrap;
+}
+
+.employee-transfer-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.employee-transfer-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.employee-transfer-form input {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.employee-transfer-form button {
+  grid-column: span 2;
+  justify-self: flex-start;
 }
 </style>
