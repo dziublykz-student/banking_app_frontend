@@ -565,6 +565,7 @@ nav {
 
   width: 520px;
   background: transparent;
+  padding-left: 100px;
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
