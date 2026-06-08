@@ -62,7 +62,7 @@ export async function getMyCheckingAccount() {
 /** Deposit money into the user's own account. */
 export function deposit(userIban, amount) {
   validateAmount(amount)
-  return request('/transactions/deposit', {
+  return request('/atm/deposit', {
     method: 'POST',
     body: { iban: userIban, amount },
   })
@@ -72,7 +72,7 @@ export function deposit(userIban, amount) {
 export function withdraw(userIban, amount, currentBalance) {
   validateAmount(amount)
   if (amount > currentBalance) throw new Error('Insufficient balance.')
-  return request('/transactions/withdraw', {
+  return request('/atm/withdraw', {
     method: 'POST',
     body: { iban: userIban, amount },
   })

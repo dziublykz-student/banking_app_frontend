@@ -45,7 +45,6 @@
     <nav class="bottom-nav">
         <button @click="router.push('/dashboard')" class="active">Home</button>
         <button @click="router.push('/profile')">Profile</button>
-        <button @click="router.push('/help')">Help</button>
     </nav>
 
   </div>
