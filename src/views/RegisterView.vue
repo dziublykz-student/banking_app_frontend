@@ -116,3 +116,30 @@ async function registerUser() {
   }
 }
 </script>
+
+<style>
+.form-group input,
+.form-group select,
+.form-group textarea,
+.auth-card input,
+.transfer-card input,
+.transfer-card select,
+.transfer-card textarea {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder,
+.auth-card input::placeholder,
+.transfer-card input::placeholder,
+.transfer-card textarea::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.transfer-card select option {
+  color: #111827;
+  background-color: #ffffff;
+}
+</style>
