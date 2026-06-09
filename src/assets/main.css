@@ -817,3 +817,30 @@ nav {
   margin-bottom: 18px;
   font-weight: 600;
 }
+
+.auth-card input,
+.auth-card select,
+.auth-card textarea,
+.transfer-card input,
+.transfer-card select,
+.transfer-card textarea,
+.transaction-filters input,
+.transaction-filters select {
+  color: #111827;
+  background-color: #ffffff;
+}
+
+.auth-card input::placeholder,
+.auth-card textarea::placeholder,
+.transfer-card input::placeholder,
+.transfer-card textarea::placeholder,
+.transaction-filters input::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.transfer-card select option,
+.transaction-filters select option {
+  color: #111827;
+  background-color: #ffffff;
+}
