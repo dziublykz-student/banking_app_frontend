@@ -826,8 +826,22 @@ nav {
 .transfer-card textarea,
 .transaction-filters input,
 .transaction-filters select {
-  color: #111827;
-  background-color: #ffffff;
+  color: #111827 !important;
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-card textarea:focus,
+.transfer-card input:focus,
+.transfer-card select:focus,
+.transfer-card textarea:focus,
+.transaction-filters input:focus,
+.transaction-filters select:focus {
+  color: #111827 !important;
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #111827 !important;
 }
 
 .auth-card input::placeholder,
@@ -835,12 +849,13 @@ nav {
 .transfer-card input::placeholder,
 .transfer-card textarea::placeholder,
 .transaction-filters input::placeholder {
-  color: #9ca3af;
-  opacity: 1;
+  color: #6b7280 !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #6b7280 !important;
 }
 
 .transfer-card select option,
 .transaction-filters select option {
-  color: #111827;
-  background-color: #ffffff;
+  color: #111827 !important;
+  background-color: #ffffff !important;
 }
