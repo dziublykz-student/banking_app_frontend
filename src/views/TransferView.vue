@@ -22,7 +22,7 @@
             <option value="">Select account</option>
             <option v-for="account in accounts" :key="account.id" :value="account.iban">
               {{ account.type }} - {{ account.iban }} - {{ formatMoney(account.balance)}}
-            </option>]
+            </option>
           </select>
         </div>
 
@@ -142,8 +142,18 @@ async function searchIbans() {
   error.value = ''
 
   try {
+    const params = new URLSearchParams()
+
+    if (search.firstName.trim()) {
+      params.append('firstName', search.firstName.trim())
+    }
+
+    if (search.lastName.trim()) {
+      params.append('lastName', search.lastName.trim())
+    }
+
     const response = await fetch(
-      `${API_DOMAIN}/users/search-ibans?firstName=${search.firstName}&lastName=${search.lastName}`,
+      `${API_DOMAIN}/users/search-ibans?${params.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`

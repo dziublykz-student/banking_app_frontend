@@ -116,15 +116,17 @@
               <p>{{ user.email }}</p>
             </div>
 
-            <span class="approved-status">Approved</span>
+            <div class="user-actions">
+              <span class="approved-status">Approved</span>
 
-            <button class="change-btn" @click="viewCustomerTransactions(user)">
-              View Transactions
-            </button>
+              <button class="change-btn" @click="viewCustomerTransactions(user)">
+                View Transactions
+              </button>
 
-            <button class="close-btn" @click="closeUser(user.id)">
-              Close
-            </button>
+              <button class="close-btn" @click="closeUser(user.id)">
+                Close
+              </button>
+            </div>
           </div>
         </section>
 
@@ -782,6 +784,13 @@ onMounted(() => {
 </script>
 
 <style>
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
 .transaction-admin-row {
   display: grid;
   grid-template-columns: 180px 1fr 190px;
